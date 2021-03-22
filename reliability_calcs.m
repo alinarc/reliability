@@ -100,7 +100,7 @@ saveas(gcf, 'AChisto.png')
 
 figure
 bar(X4,P4)
-xticklabels(X4/1000)
+xticklabels(X4/100)
 xlabel('System available capacity (kWh)')
 title('Available capacity pmf for DC system')
 saveas(gcf, 'DChisto.png')
