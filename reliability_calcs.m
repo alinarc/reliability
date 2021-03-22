@@ -40,7 +40,7 @@ lambdaPB = nCapPB*lambdaC + nDiodePB*lambdaDiode + nMosfetPB*lambdaMosfet + ...
     nResistorPB*lambdaR;
 Rpb = exp(-lambdaPB*lifetime);
 
-energyModule = 3500;
+energyModule = 4300;
 % Consider sub-system 1: module with 14 passive balancing systems in series 
 x1 = [0 energyModule];
 p1 = [1-Rpb Rpb];
@@ -48,7 +48,7 @@ n = 14;
 
 
 [X1, P1] = n_same_system_series(n,x1,p1);
-[X1, P1] = combine_like_terms(X1, P1)
+[X1, P1] = combine_like_terms(X1, P1);
 
 % Consider sub-system 2: module with 14 PB systems in series with DC-DC
 % converter
@@ -57,8 +57,12 @@ p2 = [1-Rdc Rdc];
 [X2, P2] = diff_systems_series(X1, P1, x2, p2);
 [X2, P2] = combine_like_terms(X2, P2);
 
-% Consider sub-system 3: 117 modules (with converters) connected in parallel
-[X3, P3] = n_same_system_parallel(20, X2, P2);
-[X3, P3] = combine_like_terms(X3, P3)
-[X4, P4] = n_same_system_parallel(5, X3, P3);
-[X4, P4] = combine_like_terms(X4, P4)
+% Consider sub-system 3: 116 modules (with converters) connected in parallel
+[X3, P3] = n_same_system_parallel(116, X2, P2);
+
+% Consider sub-system 4: 1 inverter in series with sub-system 3
+energyPack = 498800;
+x4 = [0 energyPack];
+p4 = [1-Rac Rac];
+[X4, P4] = diff_systems_series(X3, P3, x4, p4);
+[X4, P4] = combine_like_terms(X4, P4);
