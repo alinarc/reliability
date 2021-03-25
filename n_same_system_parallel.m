@@ -29,5 +29,5 @@ for i = 1:n-1
 %         tempX
 %     end
 end
-X = sum(tempX,1);
-P = prod(tempP,1);
+X = tempX;
+P = tempP;
