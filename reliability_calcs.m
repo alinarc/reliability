@@ -5,11 +5,12 @@ clear
 % on MIL-HDBK-217Plus
 scale = 1e6;
 lambdaC = 0.001579/scale;
-lambdaDiode = 0.015662/scale;
-lambdaMosfet = 0.075132/scale;
+lambdaDiode_Schottky = 0.001965/scale;
+lambdaDiode_Zener = 0.003966/scale;
+lambdaMosfet = 0.01784/scale;
 lambdaL= 0.00000517/scale;
 lambdaXfmr = 0.075132/scale;
-lambdaIgbt = 0.034227/scale;
+lambdaIgbt = 0.015855/scale;
 lambdaR = 0.00264/scale;
 
 lifetime = 96000; % estimated lifetime of system, based on quarterly report
@@ -21,7 +22,7 @@ nMosfetDC = 8;
 nInductorDC = 1;
 nXfmrDC = 1;
 
-lambdaDC = nCapDC*lambdaC + nDiodeDC*lambdaDiode + nMosfetDC*lambdaMosfet + ...
+lambdaDC = nCapDC*lambdaC + nDiodeDC*lambdaDiode_Schottky + nMosfetDC*lambdaMosfet + ...
     nInductorDC*lambdaL + nXfmrDC*lambdaXfmr;
 Rconv = exp(-lambdaDC*lifetime); % reliability estimate for DC-DC onverter at time 'lifetime'
 
@@ -31,7 +32,7 @@ nIgbtAC = 6;
 nInductorAC = 6;
 nResistorAC = 6;
 
-lambdaAC = nCapAC*lambdaC + nDiodeAC*lambdaDiode + nIgbtAC*lambdaIgbt + ...
+lambdaAC = nCapAC*lambdaC + nDiodeAC*lambdaDiode_Schottky + nIgbtAC*lambdaIgbt + ...
     nInductorAC*lambdaL + nResistorAC*lambdaR;
 Rinv = exp(-lambdaAC*lifetime); % reliability estimate for DC-AC onverter at time 'lifetime'
 
@@ -40,7 +41,7 @@ nDiodePB = 1;
 nMosfetPB = 1;
 nResistorPB = 3;
 
-lambdaPB = nCapPB*lambdaC + nDiodePB*lambdaDiode + nMosfetPB*lambdaMosfet + ...
+lambdaPB = nCapPB*lambdaC + nDiodePB*lambdaDiode_Zener + nMosfetPB*lambdaMosfet + ...
     nResistorPB*lambdaR;
 Rpb = exp(-lambdaPB*balanceTime);
 
@@ -51,7 +52,7 @@ energyModule = 4300;
 % In the AC case, the loss of any one balancing circuit represents the loss of a
 % whole series string of modules.
 nBlockSer = 14;
-nModSer_AC = 19;
+nModSer_AC = 20;
 Xpb_AC = nModSer_AC .* [0 energyModule]; % [Xpb_AC, Ppb] represents the distribution for one passive balancing circuit
 Ppb = [1-Rpb Rpb];
 
@@ -156,18 +157,20 @@ Xconv_DC3S = nModSer_DC3S * Xconv;
 % Subsystem 5.4: Pack. 38 3S pods in parallel, plus one 2S pod
 nModPar_DC3S = floor(nModPar_DC/nModSer_DC3S);
 [Xpack_DC3S, Ppack_DC3S] = n_same_system_parallel(nModPar_DC3S, Xpod_DC3S, Ppod_DC3S);
+size(Xpack_DC3S)
 [Xpack_DC3S, Ppack_DC3S] = diff_systems_parallel(Xpack_DC3S, Ppack_DC3S, Xpod_DC2S, Ppod_DC2S);
-
+%pause
 % System 5: System. Pack in series with inverter
 [Xsys_DC3S, Psys_DC3S] = diff_systems_series(Xpack_DC3S, Ppack_DC3S, Xinv_DC, Pinv);
 %% Figures
 figure
 bar(Xsys_AC/1000, Psys_AC)
-%xticklabels(X8)
+xticks(Xsys_AC/1000)
+% xticklabels(Xsys_AC/1000)
 xlabel('System available capacity (kWh)')
 title('Available capacity pmf for AC system')
 saveas(gcf, 'AChisto_PB.png')
-
+%pause
 figure
 bar(Xsys_DC/1000,Psys_DC)
 %xticklabels(X4/100)
@@ -194,6 +197,10 @@ title('Available capacity pmf for DC system with passive balancing and 3 modules
 saveas(gcf, 'DChisto_PB_3modules.png')
 
 w = 400000;
+Whmax_AC = energyModule * nModSer_AC * nModPar_AC
+Whmax_DC = energyModule * nModPar_DC
+Whmax_DC2S = energyModule * nModSer_DC2S * nModPar_DC2S
+Whmax_DC3S = energyModule * (nModSer_DC3S*nModPar_DC3S + nModSer_DC2S)
 
 acceptabilityAC = compute_acceptability(Xsys_AC, Psys_AC, w);
 acceptabilityDC_PB = compute_acceptability(Xsys_DC, Psys_DC, w);
@@ -210,7 +217,14 @@ expectedOutputDC_3S = sum(Xsys_DC3S.*Psys_DC3S);
 acceptability = [acceptabilityAC; acceptabilityDC_PB; acceptabilityDC_AB; acceptabilityDC2S; acceptabilityDC3S];
 expectedOutput = [expectedOutputAC; expectedOutputDC_PB; expectedOutputDC_AB; expectedOutputDC_2S; expectedOutputDC_3S];
 
-T1 = table(expectedOutput/1000, acceptability);
-T1.Properties.RowNames = ["AC system, PB", "DC system, PB", "DC system, AB", "DC system, 2S", "DC system, 3S"];
-T1.Properties.VariableNames = ["Expected output (kWh)", "Acceptability"];
+Whmax = [Whmax_AC; Whmax_DC; Whmax_DC; Whmax_DC2S; Whmax_DC3S];
+expectedOutput_pct = round(expectedOutput ./ Whmax .* 100,1);
+
+T1 = table(expectedOutput/1000, expectedOutput_pct, acceptability);
+T1.Properties.RowNames = [sprintf("AC system, PB, %0.0f kWh", Whmax_AC/1000), ...
+    sprintf("DC system, PB, %0.1f kWh", Whmax_DC/1000), ...
+    sprintf("DC system, AB, %0.1f kWh", Whmax_DC/1000), ...
+    sprintf("DC system, 2S, %0.1f kWh", Whmax_DC2S/1000), ...
+    sprintf("DC system, 3S, %0.1f kWh", Whmax_DC3S/1000)];
+T1.Properties.VariableNames = ["Expected output (kWh)", "Expected output (% of max)" "Acceptability (%)"];
 disp(T1)
