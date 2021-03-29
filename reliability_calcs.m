@@ -172,32 +172,32 @@ expectedOutputDC_3S = sum(Xsys_DC3S.*Psys_DC3S);
 
 figure
 bar(Xsys_AC/1000, Psys_AC)
-xline(expectedOutputAC/1000, 'Color','#A2142F', 'Label',sprintf('μ = %0.2f kWh',expectedOutputAC/1000), 'LineWidth',1, 'LabelOrientation', 'horizontal','LabelHorizontalAlignment', 'center')
+xline(expectedOutputAC/1000, 'Color','#A2142F', 'Label',sprintf('μ = %0.2f kWh',expectedOutputAC/1000), 'FontSize', 14,'LineWidth',1, 'LabelOrientation', 'horizontal','LabelHorizontalAlignment', 'center')
 xticks(Xsys_AC/1000)
 % xticklabels(Xsys_AC/1000)
 xlabel('System available capacity (kWh)')
 title('Figure 1. Available capacity pmf for AC system with PB')
 saveas(gcf, 'AChisto_PB.png')
-%pause
+pause
 
 figure
 bar(Xsys_DC/1000,Psys_DC)
 %xticklabels(X4/100)
-xline(expectedOutputDC_PB/1000, 'Color','#A2142F', 'Label',sprintf('μ = %0.2f kWh',expectedOutputDC_PB/1000), 'LineWidth',1, 'LabelOrientation', 'horizontal','LabelHorizontalAlignment', 'center')
+xline(expectedOutputDC_PB/1000, 'Color','#A2142F', 'Label',sprintf('μ = %0.2f kWh',expectedOutputDC_PB/1000), 'FontSize', 14, 'LineWidth',1, 'LabelOrientation', 'horizontal','LabelHorizontalAlignment', 'center')
 xlabel('System available capacity (kWh)')
 title('Figure 2. Available capacity pmf for DC system with PB and dedicated DC-DC per module')
 saveas(gcf, 'DChisto_PB_dedicated_converter.png')
 
 figure
 bar(Xsys_DC_AB/1000, Psys_DC_AB)
-xline(expectedOutputDC_AB/1000, 'Color','#A2142F', 'Label',sprintf('μ = %0.2f kWh',expectedOutputDC_AB/1000), 'LineWidth',1, 'LabelOrientation', 'horizontal','LabelHorizontalAlignment', 'center')
+xline(expectedOutputDC_AB/1000, 'Color','#A2142F', 'Label',sprintf('μ = %0.2f kWh',expectedOutputDC_AB/1000), 'FontSize', 14, 'LineWidth',1, 'LabelOrientation', 'horizontal','LabelHorizontalAlignment', 'center')
 xlabel('System available capacity (kWh)')
 title('Figure 3. Available capacity pmf for DC system with AB and dedicated DC-DC per module')
 saveas(gcf, 'DChisto_AB_dedicated_converter.png')
 
 figure
 bar(Xsys_DC2S/1000, Psys_DC2S)
-xline(expectedOutputDC_2S/1000, 'Color','#A2142F', 'Label',sprintf('μ = %0.2f kWh',expectedOutputDC_2S/1000), 'LineWidth',1, 'LabelOrientation', 'horizontal','LabelHorizontalAlignment', 'center')
+xline(expectedOutputDC_2S/1000, 'Color','#A2142F', 'Label',sprintf('μ = %0.2f kWh',expectedOutputDC_2S/1000), 'FontSize', 14, 'LineWidth',1, 'LabelOrientation', 'horizontal','LabelHorizontalAlignment', 'center')
 xlabel('System available capacity (kWh)')
 title('Figure 4. Available capacity pmf for DC system with PB and 2 modules in series with each DC-DC')
 saveas(gcf, 'DChisto_PB_2modules.png')
@@ -205,7 +205,7 @@ pause
 
 figure
 bar(Xsys_DC3S/1000, Psys_DC3S)
-xline(expectedOutputDC_3S/1000, 'Color','#A2142F', 'Label',sprintf('μ = %0.2f kWh',expectedOutputDC_3S/1000), 'LineWidth',1, 'LabelOrientation', 'horizontal','LabelHorizontalAlignment', 'center')
+xline(expectedOutputDC_3S/1000, 'Color','#A2142F', 'Label',sprintf('μ = %0.2f kWh',expectedOutputDC_3S/1000), 'FontSize', 14, 'LineWidth',1, 'LabelOrientation', 'horizontal','LabelHorizontalAlignment', 'center')
 xlabel('System available capacity (kWh)')
 title('Figure 5. Available capacity pmf for DC system with PB and 3 modules in series with each DC-DC')
 saveas(gcf, 'DChisto_PB_3modules.png')
