@@ -52,7 +52,7 @@ energyModule = 4300;
 % In the AC case, the loss of any one balancing circuit represents the loss of a
 % whole series string of modules.
 nBlockSer = 14;
-nModSer_AC = 20;
+nModSer_AC = 19;
 Xpb_AC = nModSer_AC .* [0 energyModule]; % [Xpb_AC, Ppb] represents the distribution for one passive balancing circuit
 Ppb = [1-Rpb Rpb];
 
@@ -162,38 +162,52 @@ size(Xpack_DC3S)
 %pause
 % System 5: System. Pack in series with inverter
 [Xsys_DC3S, Psys_DC3S] = diff_systems_series(Xpack_DC3S, Ppack_DC3S, Xinv_DC, Pinv);
+
 %% Figures
+expectedOutputAC = sum(Xsys_AC.*Psys_AC);
+expectedOutputDC_PB = sum(Xsys_DC.*Psys_DC);
+expectedOutputDC_AB = sum(Xsys_DC_AB.*Psys_DC_AB);
+expectedOutputDC_2S = sum(Xsys_DC2S.*Psys_DC2S); 
+expectedOutputDC_3S = sum(Xsys_DC3S.*Psys_DC3S);
+
 figure
 bar(Xsys_AC/1000, Psys_AC)
+xline(expectedOutputAC/1000, 'Color','#A2142F', 'Label',sprintf('μ = %0.2f kWh',expectedOutputAC/1000), 'LineWidth',1, 'LabelOrientation', 'horizontal','LabelHorizontalAlignment', 'center')
 xticks(Xsys_AC/1000)
 % xticklabels(Xsys_AC/1000)
 xlabel('System available capacity (kWh)')
-title('Available capacity pmf for AC system')
+title('Figure 1. Available capacity pmf for AC system with PB')
 saveas(gcf, 'AChisto_PB.png')
 %pause
+
 figure
 bar(Xsys_DC/1000,Psys_DC)
 %xticklabels(X4/100)
+xline(expectedOutputDC_PB/1000, 'Color','#A2142F', 'Label',sprintf('μ = %0.2f kWh',expectedOutputDC_PB/1000), 'LineWidth',1, 'LabelOrientation', 'horizontal','LabelHorizontalAlignment', 'center')
 xlabel('System available capacity (kWh)')
-title('Available capacity pmf for DC system with passive balancing and dedicated DC-DC per module')
+title('Figure 2. Available capacity pmf for DC system with PB and dedicated DC-DC per module')
 saveas(gcf, 'DChisto_PB_dedicated_converter.png')
 
 figure
 bar(Xsys_DC_AB/1000, Psys_DC_AB)
+xline(expectedOutputDC_AB/1000, 'Color','#A2142F', 'Label',sprintf('μ = %0.2f kWh',expectedOutputDC_AB/1000), 'LineWidth',1, 'LabelOrientation', 'horizontal','LabelHorizontalAlignment', 'center')
 xlabel('System available capacity (kWh)')
-title('Available capacity pmf for DC system with active balancing and dedicated DC-DC per module')
+title('Figure 3. Available capacity pmf for DC system with AB and dedicated DC-DC per module')
 saveas(gcf, 'DChisto_AB_dedicated_converter.png')
 
 figure
 bar(Xsys_DC2S/1000, Psys_DC2S)
+xline(expectedOutputDC_2S/1000, 'Color','#A2142F', 'Label',sprintf('μ = %0.2f kWh',expectedOutputDC_2S/1000), 'LineWidth',1, 'LabelOrientation', 'horizontal','LabelHorizontalAlignment', 'center')
 xlabel('System available capacity (kWh)')
-title('Available capacity pmf for DC system with passive balancing and 2 modules in series with each DC-DC')
+title('Figure 4. Available capacity pmf for DC system with PB and 2 modules in series with each DC-DC')
 saveas(gcf, 'DChisto_PB_2modules.png')
+pause
 
 figure
 bar(Xsys_DC3S/1000, Psys_DC3S)
+xline(expectedOutputDC_3S/1000, 'Color','#A2142F', 'Label',sprintf('μ = %0.2f kWh',expectedOutputDC_3S/1000), 'LineWidth',1, 'LabelOrientation', 'horizontal','LabelHorizontalAlignment', 'center')
 xlabel('System available capacity (kWh)')
-title('Available capacity pmf for DC system with passive balancing and 3 modules in series with each DC-DC')
+title('Figure 5. Available capacity pmf for DC system with PB and 3 modules in series with each DC-DC')
 saveas(gcf, 'DChisto_PB_3modules.png')
 
 w = 400000;
@@ -208,11 +222,11 @@ acceptabilityDC_AB = compute_acceptability(Xsys_DC_AB, Psys_DC_AB, w);
 acceptabilityDC2S = compute_acceptability(Xsys_DC2S, Psys_DC2S, w);
 acceptabilityDC3S = compute_acceptability(Xsys_DC3S, Psys_DC3S, w);
 
-expectedOutputAC = sum(Xsys_AC.*Psys_AC);
-expectedOutputDC_PB = sum(Xsys_DC.*Psys_DC);
-expectedOutputDC_AB = sum(Xsys_DC_AB.*Psys_DC_AB);
-expectedOutputDC_2S = sum(Xsys_DC2S.*Psys_DC2S); 
-expectedOutputDC_3S = sum(Xsys_DC3S.*Psys_DC3S);
+% expectedOutputAC = sum(Xsys_AC.*Psys_AC);
+% expectedOutputDC_PB = sum(Xsys_DC.*Psys_DC);
+% expectedOutputDC_AB = sum(Xsys_DC_AB.*Psys_DC_AB);
+% expectedOutputDC_2S = sum(Xsys_DC2S.*Psys_DC2S); 
+% expectedOutputDC_3S = sum(Xsys_DC3S.*Psys_DC3S);
 
 acceptability = [acceptabilityAC; acceptabilityDC_PB; acceptabilityDC_AB; acceptabilityDC2S; acceptabilityDC3S];
 expectedOutput = [expectedOutputAC; expectedOutputDC_PB; expectedOutputDC_AB; expectedOutputDC_2S; expectedOutputDC_3S];
@@ -221,7 +235,7 @@ Whmax = [Whmax_AC; Whmax_DC; Whmax_DC; Whmax_DC2S; Whmax_DC3S];
 expectedOutput_pct = round(expectedOutput ./ Whmax .* 100,1);
 
 T1 = table(expectedOutput/1000, expectedOutput_pct, acceptability);
-T1.Properties.RowNames = [sprintf("AC system, PB, %0.0f kWh", Whmax_AC/1000), ...
+T1.Properties.RowNames = [sprintf("AC system, PB, %0.1f kWh", Whmax_AC/1000), ...
     sprintf("DC system, PB, %0.1f kWh", Whmax_DC/1000), ...
     sprintf("DC system, AB, %0.1f kWh", Whmax_DC/1000), ...
     sprintf("DC system, 2S, %0.1f kWh", Whmax_DC2S/1000), ...
