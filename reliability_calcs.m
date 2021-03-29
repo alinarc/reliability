@@ -240,5 +240,5 @@ T1.Properties.RowNames = [sprintf("AC system, PB, %0.1f kWh", Whmax_AC/1000), ..
     sprintf("DC system, AB, %0.1f kWh", Whmax_DC/1000), ...
     sprintf("DC system, 2S, %0.1f kWh", Whmax_DC2S/1000), ...
     sprintf("DC system, 3S, %0.1f kWh", Whmax_DC3S/1000)];
-T1.Properties.VariableNames = ["Expected output (kWh)", "Expected output (% of max)" "Acceptability (%)"];
+T1.Properties.VariableNames = ["Expected output (kWh)", "Expected output (% of max)" "Availability (%)"];
 disp(T1)
