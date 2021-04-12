@@ -71,7 +71,7 @@ Pinv = [1-Rinv Rinv];
 %% 1. First we will consider 4 layouts, all with passive balancing
 % 1.a) AC layout
 [XacPB, PacPB] = get_ac_sys_dist(kWhModule, kWhPack_AC, nBlockSer, nModSer_AC, nModPar_AC, Rpb, Rinv);
-pause
+
 % 1.b) DC layout with 1 module per DC-DC converter
 nModSer_DC1 = 1;
 %nModPar_DC1 = 116;
@@ -199,7 +199,7 @@ expectedOutputAB_pct = round(expectedOutputAB ./ kWhPack .* 100, 1);
 
 title2 = "Table 2. Layout comparisons for active balancing circuits with half bridges";
 %title3 = "Table 3. Layout comparisons for active balancing circuits with half-bridges";
-Tab = table(expectedOutputAB./1000, expectedOutputAB_pct, acceptabilityAB);
+Tab = table(expectedOutputAB, expectedOutputAB_pct, acceptabilityAB);
 Tab.Properties.RowNames = [sprintf("AC layout, %0.1f kWh", kWhPack(1)); ...
     sprintf("DC layout, 1S, %0.1f kWh", kWhPack(2)); ...
     sprintf("DC layout, 2S, %0.1f kWh", kWhPack(3)); ...
