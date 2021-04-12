@@ -27,7 +27,7 @@ lambdaR = 0.002599279/scale;
 opHrs = 96000;
 D = 0.5;
 calHrs = opHrs/D; % estimated lifetime of system, based on quarterly report
-balanceTime = 0.2*calHrs;
+balanceTime = 0.2*opHrs;
 
 nCapDC = 2; % number of capacitors in DC-DC converter
 nDiodeDC = 8;
