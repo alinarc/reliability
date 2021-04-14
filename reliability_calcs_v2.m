@@ -40,7 +40,8 @@ lambdaDC = nCapDC*lambdaC + nDiodeDC*lambdaDiode_Schottky + nMosfetDC*lambdaMosf
 lambdaDC_half_bridge = nCapDC*lambdaC + nDiodeDC/2*lambdaDiode_Schottky + nMosfetDC/2*lambdaMosfet + ...
     nInductorDC*lambdaL + nXfmrDC*lambdaXfmr;
 Rconv = exp(-lambdaDC*calHrs); % reliability estimate for DC-DC onverter at time 'lifetime'
-Rab = exp(-lambdaDC_half_bridge*balanceTime);
+Rab_hb = exp(-lambdaDC_half_bridge*balanceTime);
+Rab_fb = exp(-lambdaDC*balanceTime);
 %Rab = exp(-lambdaDC*balanceTime);  
 
 nCapAC = 5; % number of capacitors in DC-AC inverter
@@ -142,64 +143,64 @@ Tpb.Properties.VariableNames = ["Expected output (kWh, BOL)", "Expected output (
 disp(title1)
 disp(Tpb)
 
-%% 2. Consider same 4 layouts, where each uses active balancing
+%% 2. Consider same 4 layouts, where each uses active balancing with half bridges
 % 2.a) AC layout
-[XacAB, PacAB] = get_ac_sys_dist(kWhModule, kWhPack_AC, nBlockSer, nModSer_AC, nModPar_AC, Rab, Rinv);
+[XacAB_HB, PacAB_HB] = get_ac_sys_dist(kWhModule, kWhPack_AC, nBlockSer, nModSer_AC, nModPar_AC, Rab_hb, Rinv);
 
 % 2.b) DC layout, modules in 1S
-[XdcAB1, PdcAB1] = get_dc_sys_dist(kWhModule, kWhPack_DC1, nBlockSer, nModSer_DC1, nModPar_DC1, Rab, Rconv, Rinv);
+[XdcAB1_HB, PdcAB1_HB] = get_dc_sys_dist(kWhModule, kWhPack_DC1, nBlockSer, nModSer_DC1, nModPar_DC1, Rab_hb, Rconv, Rinv);
 
 % 2.c) DC layout, modules in 2S
-[XdcAB2, PdcAB2] = get_dc_sys_dist(kWhModule, kWhPack_DC2, nBlockSer, nModSer_DC2, nModPar_DC2, Rab, Rconv, Rinv);
+[XdcAB2_HB, PdcAB2_HB] = get_dc_sys_dist(kWhModule, kWhPack_DC2, nBlockSer, nModSer_DC2, nModPar_DC2, Rab_hb, Rconv, Rinv);
 
 % 2.d) DC layout, modules in 3S
-[XdcAB3, PdcAB3] = get_dc_sys_dist(kWhModule, kWhPack_DC3, nBlockSer, nModSer_DC3, nModPar_DC3, Rab, Rconv, Rinv);
+[XdcAB3_HB, PdcAB3_HB] = get_dc_sys_dist(kWhModule, kWhPack_DC3, nBlockSer, nModSer_DC3, nModPar_DC3, Rab_hb, Rconv, Rinv);
 
-expectedOutputAC_AB = sum(XacAB .* PacAB);
-expectedOutputDC_AB1 = sum(XdcAB1 .* PdcAB1);
-expectedOutputDC_AB2 = sum(XdcAB2 .* PdcAB2);
-expectedOutputDC_AB3 = sum(XdcAB3 .* PdcAB3);
+expectedOutputAC_AB_HB = sum(XacAB_HB .* PacAB_HB);
+expectedOutputDC_AB1_HB = sum(XdcAB1_HB .* PdcAB1_HB);
+expectedOutputDC_AB2_HB = sum(XdcAB2_HB .* PdcAB2_HB);
+expectedOutputDC_AB3_HB = sum(XdcAB3_HB .* PdcAB3_HB);
 
 f1 = figure;
 f1.Position = [1441 206 900 550];
 subplot(2,2,1)
-bar(XacAB, PacAB);
+bar(XacAB_HB, PacAB_HB);
 title('AC layout')
-xline(expectedOutputAC_AB, 'Color','#A2142F', 'Label',sprintf('μ = %0.2f kWh', expectedOutputAC_AB),'LineWidth',1, 'LabelOrientation', 'horizontal','LabelHorizontalAlignment', 'center')
+xline(expectedOutputAC_AB_HB, 'Color','#A2142F', 'Label',sprintf('μ = %0.2f kWh', expectedOutputAC_AB_HB),'LineWidth',1, 'LabelOrientation', 'horizontal','LabelHorizontalAlignment', 'center')
 xlabel('System available capacity (kWh)')
 
 subplot(2,2,2)
-bar(XdcAB1, PdcAB1);
+bar(XdcAB1_HB, PdcAB1_HB);
 title('DC layout, modules in 1S')
-xline(expectedOutputDC_AB1, 'Color','#A2142F', 'Label',sprintf('μ = %0.2f kWh', expectedOutputDC_AB1),'LineWidth', 1, 'LabelOrientation', 'horizontal','LabelHorizontalAlignment', 'center')
+xline(expectedOutputDC_AB1_HB, 'Color','#A2142F', 'Label',sprintf('μ = %0.2f kWh', expectedOutputDC_AB1_HB),'LineWidth', 1, 'LabelOrientation', 'horizontal','LabelHorizontalAlignment', 'center')
 xlabel('System available capacity (kWh)')
 
 subplot(2,2,3)
-bar(XdcAB2, PdcAB2);
+bar(XdcAB2_HB, PdcAB2_HB);
 title('DC layout, modules in 2S')
-xline(expectedOutputDC_AB2, 'Color','#A2142F', 'Label',sprintf('μ = %0.2f kWh', expectedOutputDC_AB2),'LineWidth', 1, 'LabelOrientation', 'horizontal','LabelHorizontalAlignment', 'center')
+xline(expectedOutputDC_AB2_HB, 'Color','#A2142F', 'Label',sprintf('μ = %0.2f kWh', expectedOutputDC_AB2_HB),'LineWidth', 1, 'LabelOrientation', 'horizontal','LabelHorizontalAlignment', 'center')
 xlabel('System available capacity (kWh)')
 
 subplot(2,2,4)
-bar(XdcAB3, PdcAB3);
+bar(XdcAB3_HB, PdcAB3_HB);
 title('DC layout, modules in 3S')
-xline(expectedOutputDC_AB3, 'Color','#A2142F', 'Label',sprintf('μ = %0.2f kWh', expectedOutputDC_AB3),'LineWidth', 1, 'LabelOrientation', 'horizontal','LabelHorizontalAlignment', 'center')
+xline(expectedOutputDC_AB3_HB, 'Color','#A2142F', 'Label',sprintf('μ = %0.2f kWh', expectedOutputDC_AB3_HB),'LineWidth', 1, 'LabelOrientation', 'horizontal','LabelHorizontalAlignment', 'center')
 xlabel('System available capacity (kWh)')
 sgtitle('Available capacity PMFs for layouts with active balancing, half bridges')
 saveas(f1, 'ABhistos_HB.png')
 
 w = 400;
-acceptabilityAB = [compute_acceptability(XacAB, PacAB, w); ...
-    compute_acceptability(XdcAB1, PdcAB1, w); ...
-    compute_acceptability(XdcAB2, PdcAB2, w); ...  
-    compute_acceptability(XdcAB3, PdcAB3, w)];
+acceptabilityAB_HB = [compute_acceptability(XacAB_HB, PacAB_HB, w); ...
+    compute_acceptability(XdcAB1_HB, PdcAB1_HB, w); ...
+    compute_acceptability(XdcAB2_HB, PdcAB2_HB, w); ...  
+    compute_acceptability(XdcAB3_HB, PdcAB3_HB, w)];
 
-expectedOutputAB = [expectedOutputAC_AB; expectedOutputDC_AB1; expectedOutputDC_AB2; expectedOutputDC_AB3];
-expectedOutputAB_pct = round(expectedOutputAB ./ kWhPack .* 100, 1);
+expectedOutputAB_HB = [expectedOutputAC_AB_HB; expectedOutputDC_AB1_HB; expectedOutputDC_AB2_HB; expectedOutputDC_AB3_HB];
+expectedOutputAB_HB_pct = round(expectedOutputAB_HB ./ kWhPack .* 100, 1);
 
 title2 = "Table 2. Layout comparisons for active balancing circuits with half bridges";
 %title3 = "Table 3. Layout comparisons for active balancing circuits with half-bridges";
-Tab = table(expectedOutputAB, expectedOutputAB_pct, acceptabilityAB);
+Tab = table(expectedOutputAB_HB, expectedOutputAB_HB_pct, acceptabilityAB_HB);
 Tab.Properties.RowNames = [sprintf("AC layout, %0.1f kWh", kWhPack(1)); ...
     sprintf("DC layout, 1S, %0.1f kWh", kWhPack(2)); ...
     sprintf("DC layout, 2S, %0.1f kWh", kWhPack(3)); ...
@@ -209,3 +210,104 @@ Tab.Properties.VariableNames = ["Expected output (kWh, BOL)", "Expected output (
 disp(title2)
 disp(Tab)
 
+%% 3. Consider same 4 layouts, where each uses active balancing with full bridges
+% 3.a) AC layout
+[XacAB_FB, PacAB_FB] = get_ac_sys_dist(kWhModule, kWhPack_AC, nBlockSer, nModSer_AC, nModPar_AC, Rab_fb, Rinv);
+
+% 3.b) DC layout, modules in 1S
+[XdcAB1_FB, PdcAB1_FB] = get_dc_sys_dist(kWhModule, kWhPack_DC1, nBlockSer, nModSer_DC1, nModPar_DC1, Rab_fb, Rconv, Rinv);
+
+% 3.c) DC layout, modules in 2S
+[XdcAB2_FB, PdcAB2_FB] = get_dc_sys_dist(kWhModule, kWhPack_DC2, nBlockSer, nModSer_DC2, nModPar_DC2, Rab_fb, Rconv, Rinv);
+
+% 3.d) DC layout, modules in 3S
+[XdcAB3_FB, PdcAB3_FB] = get_dc_sys_dist(kWhModule, kWhPack_DC3, nBlockSer, nModSer_DC3, nModPar_DC3, Rab_fb, Rconv, Rinv);
+
+expectedOutputAC_AB_FB = get_expected_output(XacAB_FB, PacAB_FB);
+expectedOutputDC_AB1_FB = get_expected_output(XdcAB1_FB, PdcAB1_FB);
+expectedOutputDC_AB2_FB = get_expected_output(XdcAB2_FB, PdcAB2_FB);
+expectedOutputDC_AB3_FB = get_expected_output(XdcAB3_FB, PdcAB3_FB);
+
+f2 = figure;
+f2.Position = [1441 206 900 550];
+subplot(2,2,1)
+bar(XacAB_FB, PacAB_FB)
+title('AC layout')
+xline(expectedOutputAC_AB_FB, 'Color', '#A2142F', 'Label', sprintf('μ = %0.2f kWh', expectedOutputAC_AB_FB),'LineWidth',1, 'LabelOrientation', 'horizontal','LabelHorizontalAlignment', 'center')
+xlabel('System available capacity (kWh)')
+
+subplot(2,2,2)
+bar(XdcAB1_FB, PdcAB1_FB)
+title('DC layout, modules in 1S')
+xline(expectedOutputDC_AB1_FB, 'Color', '#A2142F', 'Label', sprintf('μ = %0.2f kWh', expectedOutputDC_AB1_FB),'LineWidth',1, 'LabelOrientation', 'horizontal','LabelHorizontalAlignment', 'center')
+xlabel('System available capacity (kWh)')
+
+subplot(2,2,3)
+bar(XdcAB2_FB, PdcAB2_FB)
+title('DC layout, modules in 2S')
+xline(expectedOutputDC_AB2_FB, 'Color', '#A2142F', 'Label', sprintf('μ = %0.2f kWh', expectedOutputDC_AB2_FB),'LineWidth',1, 'LabelOrientation', 'horizontal','LabelHorizontalAlignment', 'center')
+xlabel('System available capacity (kWh)')
+
+subplot(2,2,4)
+bar(XdcAB3_FB, PdcAB3_FB)
+title('DC layout, modules in 3S')
+xline(expectedOutputDC_AB3_FB, 'Color', '#A2142F', 'Label', sprintf('μ = %0.2f kWh', expectedOutputDC_AB3_FB),'LineWidth',1, 'LabelOrientation', 'horizontal','LabelHorizontalAlignment', 'center')
+xlabel('System available capacity (kWh)')
+sgtitle('Available capacity PMFs for layouts with active balancing, full bridges')
+saveas(f2, 'ABhistos_FB.png')
+
+acceptabilityAB_FB = [compute_acceptability(XacAB_FB, PacAB_FB, w); ...
+    compute_acceptability(XdcAB1_FB, PdcAB1_FB, w); ...
+    compute_acceptability(XdcAB2_FB, PdcAB2_FB, w); ...  
+    compute_acceptability(XdcAB3_FB, PdcAB3_FB, w)];
+
+expectedOutputAB_FB = [expectedOutputAC_AB_FB; expectedOutputDC_AB1_FB; expectedOutputDC_AB2_FB; expectedOutputDC_AB3_FB];
+expectedOutputAB_FB_pct = round(expectedOutputAB_FB ./ kWhPack .* 100, 1);
+
+title3 = "Table 3. Layout comparisons for active balancing circuits with full bridges";
+Tab_fb = table(expectedOutputAB_FB, expectedOutputAB_FB_pct, acceptabilityAB_FB);
+Tab_fb.Properties.RowNames = [sprintf("AC layout, %0.1f kWh", kWhPack(1)); ...
+    sprintf("DC layout, 1S, %0.1f kWh", kWhPack(2)); ...
+    sprintf("DC layout, 2S, %0.1f kWh", kWhPack(3)); ...
+    sprintf("DC layout, 3S, %0.1f kWh", kWhPack(4))];
+Tab_fb.Properties.VariableNames = ["Expected output (kWh, BOL)", "Expected output (% of max, BOL)", sprintf("Availability (%%), w = %0.0f kWh", w)];
+disp(title3)
+disp(Tab_fb)
+
+% AC_dists = organize_dists(XacPB, PacPB, XacAB_HB, PacAB_HB, XacAB_FB, PacAB_FB);
+% DC1_dists = organize_dists(XdcPB1, PdcPB1, XacAB1_HB, PacAB1_HB, XacAB1_FB, PacAB1_FB);
+% DC2_dists = organize_dists(XdcPB2, PdcPB2, XacAB2_HB, PacAB2_HB, XacAB2_FB, PacAB2_FB);
+% DC3_dists = organize_dists(XdcPB3, PdcPB3, XacAB3_HB, PacAB3_HB, XacAB3_FB, PacAB3_FB);
+
+musAC = [expectedOutputAC_PB expectedOutputAC_AB_HB expectedOutputAC_AB_FB];
+sigmasAC = [std(XacPB, PacPB) std(XacAB_HB, PacAB_HB) std(XacAB_FB, PacAB_FB)];
+
+musDC1 = [expectedOutputDC_PB1 expectedOutputDC_AB1_HB expectedOutputDC_AB1_FB];
+sigmasDC1 = [std(XdcPB1, PdcPB1) std(XdcAB1_HB, PdcAB1_HB) std(XdcAB1_FB, PdcAB1_FB)];
+
+musDC2 = [expectedOutputDC_PB2 expectedOutputDC_AB2_HB expectedOutputDC_AB2_FB];
+sigmasDC2 = [std(XdcPB2, PdcPB2) std(XdcAB2_HB, PdcAB2_HB) std(XdcAB2_FB, PdcAB2_FB)];
+
+musDC3 = [expectedOutputDC_PB3 expectedOutputDC_AB3_HB expectedOutputDC_AB3_FB];
+sigmasDC3 = [std(XdcPB3, PdcPB3) std(XdcAB3_HB, PdcAB3_HB) std(XdcAB3_FB, PdcAB3_FB)];
+
+
+mus = [musAC; musDC1; musDC2; musDC3];
+sigmas = [sigmasAC; sigmasDC1; sigmasDC2; sigmasDC3];
+
+f3 = figure;
+b = bar(mus);
+hold on
+[ngroups, nbars] = size(mus);
+x = nan(nbars, ngroups);
+for i = 1:nbars
+    x(i,:) = b(i).XEndPoints;
+end
+
+errorbar(x', mus, sigmas, 'k', 'linestyle', 'none')
+set(gca, 'xticklabel', {'AC'; 'DC,1S'; 'DC,2S'; 'DC,3S'})
+ylim([0 max(mus+sigmas,[],'all')+10]);
+ylabel('Expected Output (kWh)')
+legend('PB', 'AB-HB', 'AB-FB', 'Location', 'southoutside', 'orientation', 'horizontal')
+saveas(f3, 'compare_all.png')
+hold off
