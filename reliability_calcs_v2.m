@@ -326,34 +326,35 @@ accDC3 = [acceptabilityPB(4) acceptabilityAB_HB(4) acceptabilityAB_FB(4)];
 
 f4 = figure;
 markerSize = 10;
-plot(accAC(1), musAC_pct(1), 'ro', 'MarkerSize', markerSize);
+linewidth = 2;
+plot(accAC(1), musAC_pct(1), 'ro', 'MarkerSize', markerSize, 'LineWidth', linewidth);
 hold on
-plot(accAC(2), musAC_pct(2), 'r+', 'MarkerSize', markerSize);
-plot(accAC(3), musAC_pct(3), 'r*', 'MarkerSize', markerSize);
+plot(accAC(2), musAC_pct(2), 'r+', 'MarkerSize', markerSize, 'LineWidth', linewidth);
+plot(accAC(3), musAC_pct(3), 'r*', 'MarkerSize', markerSize, 'LineWidth', linewidth);
 
-plot(accDC1(1), musDC1_pct(1), 'bo', 'MarkerSize', markerSize);
-plot(accDC1(2), musDC1_pct(2), 'b+', 'MarkerSize', markerSize);
-plot(accDC1(3), musDC1_pct(3), 'b*', 'MarkerSize', markerSize);
+plot(accDC1(1), musDC1_pct(1), 'bo', 'MarkerSize', markerSize, 'LineWidth', linewidth);
+plot(accDC1(2), musDC1_pct(2), 'b+', 'MarkerSize', markerSize, 'LineWidth', linewidth);
+plot(accDC1(3), musDC1_pct(3), 'b*', 'MarkerSize', markerSize, 'LineWidth', linewidth);
 
-plot(accDC2(1), musDC2_pct(1), 'go', 'MarkerSize', markerSize);
-plot(accDC2(2), musDC2_pct(2), 'g+', 'MarkerSize', markerSize);
-plot(accDC2(3), musDC2_pct(3), 'g*', 'MarkerSize', markerSize);
+plot(accDC2(1), musDC2_pct(1), 'go', 'MarkerSize', markerSize, 'LineWidth', linewidth);
+plot(accDC2(2), musDC2_pct(2), 'g+', 'MarkerSize', markerSize, 'LineWidth', linewidth);
+plot(accDC2(3), musDC2_pct(3), 'g*', 'MarkerSize', markerSize, 'LineWidth', linewidth);
 
-plot(accDC3(1), musDC3_pct(1), 'co', 'MarkerSize', markerSize);
-plot(accDC3(2), musDC3_pct(2), 'c+', 'MarkerSize', markerSize);
-plot(accDC3(3), musDC3_pct(3), 'c*', 'MarkerSize', markerSize);
+plot(accDC3(1), musDC3_pct(1), 'co', 'MarkerSize', markerSize, 'LineWidth', linewidth);
+plot(accDC3(2), musDC3_pct(2), 'c+', 'MarkerSize', markerSize, 'LineWidth', linewidth);
+plot(accDC3(3), musDC3_pct(3), 'c*', 'MarkerSize', markerSize, 'LineWidth', linewidth);
 
 xlabel('Availability (%) w = 400 kWh')
 ylabel('Expected output (% of initial capacity')
 grid on
 
 h = zeros(7, 1);
-h(1) = plot(NaN,NaN,'ok');
-h(2) = plot(NaN,NaN,'+k');
-h(3) = plot(NaN,NaN,'*k');
-h(4) = plot(NaN,NaN,'-r');
-h(5) = plot(NaN,NaN,'-b');
-h(6) = plot(NaN,NaN,'-g');
-h(7) = plot(NaN,NaN,'-c');
+h(1) = plot(NaN,NaN,'ok', 'LineWidth', linewidth);
+h(2) = plot(NaN,NaN,'+k', 'LineWidth', linewidth);
+h(3) = plot(NaN,NaN,'*k', 'LineWidth', linewidth);
+h(4) = plot(NaN,NaN,'-r', 'LineWidth', linewidth);
+h(5) = plot(NaN,NaN,'-b', 'LineWidth', linewidth);
+h(6) = plot(NaN,NaN,'-g', 'LineWidth', linewidth);
+h(7) = plot(NaN,NaN,'-c', 'LineWidth', linewidth);
 legend(h, 'PB','AB-HB','AB-FB', 'AC', 'DC-1S', 'DC-2S', 'DC-3S', 'Location', 'southeast');
 saveas(f4, 'compare-all2.png')
