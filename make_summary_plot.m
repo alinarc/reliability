@@ -4,6 +4,7 @@ function f = make_summary_plot(mus, sigmas, type, balType)
 % chemistry.
 f = figure;
 b = bar(mus);
+grid on
 hold on
 [ngroups, nbars] = size(mus);
 x = nan(nbars, ngroups);
@@ -13,7 +14,7 @@ end
 
 errorbar(x', mus, sigmas, 'k', 'linestyle', 'none')
 
-ylim([0 max(mus+sigmas,[],'all')+10]);
+ylim([0 max(mus+sigmas,[],'all')+max(mus+sigmas,[],'all')/50]);
 ylabel('Expected Output (kWh)')
 
 switch type
@@ -37,7 +38,7 @@ switch type
                  saveas(f, 'compare_all_chem_FB.png')
         end
     case 3 
-        set(gca, 'xticklabel', {'Layout 1 (ref)'; 'Layout 3: 1S'; 'Layout 3: 2S'; 'Layout 3: 3S'; 'Layout 3: 4S'})
+        set(gca, 'xticklabel', {'Layout 1 (ref)'; 'Layout 3: 1S'; 'Layout 3: 2S'; 'Layout 3: 3S'; 'Layout 3: 15S'})
         title('Expected available capacity considering modules in series strings')
         legend('PB', 'AB-HB', 'AB-FB', 'Location', 'southoutside', 'orientation', 'horizontal')
         saveas(f, 'compare_all_modules_series.png')
