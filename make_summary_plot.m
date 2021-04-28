@@ -12,16 +12,18 @@ for i = 1:nbars
 end
 
 errorbar(x', mus, sigmas, 'k', 'linestyle', 'none')
-set(gca, 'xticklabel', {'Layout 1'; 'Layout 2'; 'Layout 3'; 'Layout 4'; 'Layout 5'})
+
 ylim([0 max(mus+sigmas,[],'all')+10]);
 ylabel('Expected Output (kWh)')
 
 switch type
     case 1
+        set(gca, 'xticklabel', {'Layout 1'; 'Layout 2'; 'Layout 3'; 'Layout 4'; 'Layout 5'})
         title('Expected available capacity for 5 layouts, considering balancing type')
         legend('PB', 'AB-HB', 'AB-FB', 'Location', 'southoutside', 'orientation', 'horizontal')
         saveas(f, 'compare_all_bal.png')
     case 2
+        set(gca, 'xticklabel', {'Layout 1'; 'Layout 2'; 'Layout 3'; 'Layout 4'; 'Layout 5'})
         legend('K2 LFP/Graphite', 'LMO/LTO', 'LFP/LTO', 'Location', 'southoutside', 'orientation', 'horizontal')
         switch balType
             case 1
@@ -34,6 +36,11 @@ switch type
                 title('Expected available capacity for 5 layouts, considering cell chemistry (Active balancing-full bridges)')
                  saveas(f, 'compare_all_chem_FB.png')
         end
+    case 3 
+        set(gca, 'xticklabel', {'Layout 1 (ref)'; 'Layout 3: 1S'; 'Layout 3: 2S'; 'Layout 3: 3S'; 'Layout 3: 4S'})
+        title('Expected available capacity considering modules in series strings')
+        legend('PB', 'AB-HB', 'AB-FB', 'Location', 'southoutside', 'orientation', 'horizontal')
+        saveas(f, 'compare_all_modules_series.png')
 end
 % 
 % mus = reshape(mus', [ngroups*nbars 1]);

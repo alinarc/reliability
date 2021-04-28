@@ -202,5 +202,35 @@ for i = 1:3
     [mus_cc(:,i,j), sigmas_cc(:,i,j)] = get_dist_params(X_cc(:,i,j), P_cc(:,i,j));
 end
 
- make_summary_plot(mus_cc(:,:,j), sigmas_cc(:,:,j), 2, j);
+ %make_summary_plot(mus_cc(:,:,j), sigmas_cc(:,:,j), 2, j);
 end
+
+
+[nBlockSer, kWhModule, nModSer_conv, nModPar_conv, kWhPack_conv] = ...
+        get_conventional_layout(max(vCell), AhBal, kWhModule_desired, ...
+        kWhPack_desired, vModule_desired, vPack_desired_AC);
+%% Explore impact of modules in series
+nModSer = [1 2 3 4];
+X_ms = cell(5,3);
+P_ms = cell(5,3);
+mus_ms = zeros(5,3);
+sigmas_ms = zeros(5,3);
+
+
+for n = 1:5
+     [nModPar_mod, kWhPack_mod] = get_modular_layout(kWhModule, n, kWhPack_desired)
+     for b = 1:3
+          Rbal = bal(b);
+         if n==1
+             [X_ms{n,b}, P_ms{n,b}] = get_ess1_sys_dist(kWhModule, kWhPack_conv, nBlockSer, ...
+                 nModSer_conv, nModPar_conv, Rbal, Rinv, Rxfmr);      
+         else
+             [X_ms{n,b}, P_ms{n,b}] = get_ess4_sys_dist(kWhModule, kWhPack_mod, nBlockSer, ...
+                 n, nModPar_mod, Rbal, Rcon, Rinv);
+         end
+     end
+     [mus_ms(n, :), sigmas_ms(n,:)] = get_dist_params(X_ms(n,:), P_ms(n,:));
+end
+
+make_summary_plot(mus_ms, sigmas_ms, 3, 1);
+
