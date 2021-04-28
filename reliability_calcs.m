@@ -93,78 +93,114 @@ lambdaPB = nCapPB*L.lambdaC_bal + nDiodePB*L.lambdaDiode_bal + nMosfetPB*L.lambd
 
 Rpb = exp(-lambdaPB/scale*calHrs);
 
-%% Evaluate all 5 systems with passive balancing circuits, generate plot comparing the PMFs
+% %% Evaluate all 5 systems with passive balancing circuits, generate plot comparing the PMFs
+% 
+% [X1_PB, P1_PB] = get_ess1_sys_dist(kWhModule, kWhPack_conv, nBlockSer, nModSer_conv, ...
+%     nModPar_conv, Rpb, Rinv, Rxfmr);
+% 
+% [X2_PB, P2_PB] = get_ess2_sys_dist(kWhModule, kWhPack_conv, nBlockSer, nModSer_conv, ...
+%     nModPar_conv, Rpb, Rinv, Rcon);
+% 
+% [X3_PB, P3_PB] = get_ess3_sys_dist(kWhModule, kWhPack_conv, nBlockSer, nModSer_conv, ...
+%     nModPar_conv, Rpb, Rcon);
+% 
+% [X4_PB, P4_PB] = get_ess4_sys_dist(kWhModule, kWhPack_mod1, nBlockSer, nModSer_mod1, ...
+%     nModPar_mod1, Rpb, Rcon, Rinv);
+% 
+% [X5_PB, P5_PB] = get_ess5_sys_dist(kWhModule, kWhPack_mod1, nBlockSer, nModSer_mod1, ...
+%     nModPar_mod1, Rpb, Rcon);
+% 
+% X_PB = {X1_PB; X2_PB; X3_PB; X4_PB; X5_PB};
+% P_PB = {P1_PB; P2_PB; P3_PB; P4_PB; P5_PB};
+% 
+% [mus_PB, sigmas_PB] = get_dist_params(X_PB, P_PB);
+% 
+% f1 = make_5_bar_chart(X_PB, P_PB, mus_PB, 1);
+% 
+% %% Explore same 5 layouts with active balancing, half bridge circuits
+% [X1_HB, P1_HB] = get_ess1_sys_dist(kWhModule, kWhPack_conv, nBlockSer, nModSer_conv, ...
+%     nModPar_conv, Rab_hb, Rinv, Rxfmr);
+% 
+% [X2_HB, P2_HB] = get_ess2_sys_dist(kWhModule, kWhPack_conv, nBlockSer, nModSer_conv, ...
+%     nModPar_conv, Rab_hb, Rinv, Rcon);
+% 
+% [X3_HB, P3_HB] = get_ess3_sys_dist(kWhModule, kWhPack_conv, nBlockSer, nModSer_conv, ...
+%     nModPar_conv, Rab_hb, Rcon);
+% 
+% [X4_HB, P4_HB] = get_ess4_sys_dist(kWhModule, kWhPack_mod1, nBlockSer, nModSer_mod1, ...
+%     nModPar_mod1, Rab_hb, Rcon, Rinv);
+% 
+% [X5_HB, P5_HB] = get_ess5_sys_dist(kWhModule, kWhPack_mod1, nBlockSer, nModSer_mod1, ...
+%     nModPar_mod1, Rab_hb, Rcon);
+% 
+% X_HB = {X1_HB; X2_HB; X3_HB; X4_HB; X5_HB};
+% P_HB = {P1_HB; P2_HB; P3_HB; P4_HB; P5_HB};
+% 
+% [mus_HB, sigmas_HB] = get_dist_params(X_HB, P_HB);
+% 
+% f2 = make_5_bar_chart(X_HB, P_HB, mus_HB, 2);
+% 
+% %% Explore same 5 layouts with active balancing, full bridge circuits
+% [X1_FB, P1_FB] = get_ess1_sys_dist(kWhModule, kWhPack_conv, nBlockSer, nModSer_conv, ...
+%     nModPar_conv, Rab_fb, Rinv, Rxfmr);
+% 
+% [X2_FB, P2_FB] = get_ess2_sys_dist(kWhModule, kWhPack_conv, nBlockSer, nModSer_conv, ...
+%     nModPar_conv, Rab_fb, Rinv, Rcon);
+% 
+% [X3_FB, P3_FB] = get_ess3_sys_dist(kWhModule, kWhPack_conv, nBlockSer, nModSer_conv, ...
+%     nModPar_conv, Rab_fb, Rcon);
+% 
+% [X4_FB, P4_FB] = get_ess4_sys_dist(kWhModule, kWhPack_mod1, nBlockSer, nModSer_mod1, ...
+%     nModPar_mod1, Rab_fb, Rcon, Rinv);
+% 
+% [X5_FB, P5_FB] = get_ess5_sys_dist(kWhModule, kWhPack_mod1, nBlockSer, nModSer_mod1, ...
+%     nModPar_mod1, Rab_fb, Rcon);
+% 
+% X_FB = {X1_FB; X2_FB; X3_FB; X4_FB; X5_FB};
+% P_FB = {P1_FB; P2_FB; P3_FB; P4_FB; P5_FB};
+% 
+% [mus_FB, sigmas_FB] = get_dist_params(X_FB, P_FB);
+% 
+% f3 = make_5_bar_chart(X_FB, P_FB, mus_FB, 3);
+% 
+% %% Compare all cases (5 layouts, 3 balancing types) in a plot with mean and std dev of PMFs
+% mus = [mus_PB, mus_HB, mus_FB];
+% sigmas = [sigmas_PB, sigmas_HB, sigmas_FB]; 
+% 
+% f4 = make_summary_plot(mus, sigmas, 1);
+% 
+%% Explore impact of cell chemistry
+vCell = [2.5 3.65; 1.5 2.9; 1.2 2.5];
+X_cc = cell(5,3,3);
+P_cc = cell(5,3,3);
 
-[X1_PB, P1_PB] = get_ess1_sys_dist(kWhModule, kWhPack_conv, nBlockSer, nModSer_conv, ...
-    nModPar_conv, Rpb, Rinv, Rxfmr);
+mus_cc = zeros(5,3,3);
+sigmas_cc = zeros(5,3,3);
 
-[X2_PB, P2_PB] = get_ess2_sys_dist(kWhModule, kWhPack_conv, nBlockSer, nModSer_conv, ...
-    nModPar_conv, Rpb, Rinv, Rcon);
+bal = [Rpb; Rab_hb; Rab_fb];
 
-[X3_PB, P3_PB] = get_ess3_sys_dist(kWhModule, kWhPack_conv, nBlockSer, nModSer_conv, ...
-    nModPar_conv, Rpb, Rcon);
+for j = 1:3
+    Rbal = bal(j);
 
-[X4_PB, P4_PB] = get_ess4_sys_dist(kWhModule, kWhPack_mod1, nBlockSer, nModSer_mod1, ...
-    nModPar_mod1, Rpb, Rcon, Rinv);
+for i = 1:3
+    [nBlockSer, kWhModule, nModSer_conv, nModPar_conv, kWhPack_conv] = ...
+        get_conventional_layout(vCell(i,:), AhBal, kWhModule_desired, ...
+        kWhPack_desired, vModule_desired, vPack_desired_AC);
+    [nModPar_mod1, kWhPack_mod1] = get_modular_layout(kWhModule, nModSer_mod1, kWhPack_desired);
+    
+    [X_cc{1,i,j}, P_cc{1,i,j}] = get_ess1_sys_dist(kWhModule, kWhPack_conv, nBlockSer, ...
+        nModSer_conv, nModPar_conv, Rbal, Rinv, Rxfmr);
+    [X_cc{2, i,j}, P_cc{2,i,j}] = get_ess2_sys_dist(kWhModule, kWhPack_conv, nBlockSer, ...
+        nModSer_conv, nModPar_conv, Rbal, Rinv, Rcon);
+    [X_cc{3, i,j}, P_cc{3,i,j}] = get_ess3_sys_dist(kWhModule, kWhPack_conv, nBlockSer, ...
+        nModSer_conv, nModPar_conv, Rbal, Rcon);
+    [X_cc{4, i,j}, P_cc{4,i,j}] = get_ess4_sys_dist(kWhModule, kWhPack_mod1, nBlockSer, ...
+        nModSer_mod1, nModPar_mod1, Rbal, Rcon, Rinv);
+    [X_cc{5, i,j}, P_cc{5,i,j}] = get_ess5_sys_dist(kWhModule, kWhPack_mod1, nBlockSer, ...
+        nModSer_mod1, nModPar_mod1, Rbal, Rcon);
+    
+    [mus_cc(:,i,j), sigmas_cc(:,i,j)] = get_dist_params(X_cc(:,i,j), P_cc(:,i,j));
+end
 
-[X5_PB, P5_PB] = get_ess5_sys_dist(kWhModule, kWhPack_mod1, nBlockSer, nModSer_mod1, ...
-    nModPar_mod1, Rpb, Rcon);
-
-X_PB = {X1_PB; X2_PB; X3_PB; X4_PB; X5_PB};
-P_PB = {P1_PB; P2_PB; P3_PB; P4_PB; P5_PB};
-
-[mus_PB, sigmas_PB] = get_dist_params(X_PB, P_PB);
-
-f1 = make_5_bar_chart(X_PB, P_PB, mus_PB, 1);
-
-%% Explore same 5 layouts with active balancing, half bridge circuits
-[X1_HB, P1_HB] = get_ess1_sys_dist(kWhModule, kWhPack_conv, nBlockSer, nModSer_conv, ...
-    nModPar_conv, Rab_hb, Rinv, Rxfmr);
-
-[X2_HB, P2_HB] = get_ess2_sys_dist(kWhModule, kWhPack_conv, nBlockSer, nModSer_conv, ...
-    nModPar_conv, Rab_hb, Rinv, Rcon);
-
-[X3_HB, P3_HB] = get_ess3_sys_dist(kWhModule, kWhPack_conv, nBlockSer, nModSer_conv, ...
-    nModPar_conv, Rab_hb, Rcon);
-
-[X4_HB, P4_HB] = get_ess4_sys_dist(kWhModule, kWhPack_mod1, nBlockSer, nModSer_mod1, ...
-    nModPar_mod1, Rab_hb, Rcon, Rinv);
-
-[X5_HB, P5_HB] = get_ess5_sys_dist(kWhModule, kWhPack_mod1, nBlockSer, nModSer_mod1, ...
-    nModPar_mod1, Rab_hb, Rcon);
-
-X_HB = {X1_HB; X2_HB; X3_HB; X4_HB; X5_HB};
-P_HB = {P1_HB; P2_HB; P3_HB; P4_HB; P5_HB};
-
-[mus_HB, sigmas_HB] = get_dist_params(X_HB, P_HB);
-
-f2 = make_5_bar_chart(X_HB, P_HB, mus_HB, 2);
-
-%% Explore same 5 layouts with active balancing, full bridge circuits
-[X1_FB, P1_FB] = get_ess1_sys_dist(kWhModule, kWhPack_conv, nBlockSer, nModSer_conv, ...
-    nModPar_conv, Rab_fb, Rinv, Rxfmr);
-
-[X2_FB, P2_FB] = get_ess2_sys_dist(kWhModule, kWhPack_conv, nBlockSer, nModSer_conv, ...
-    nModPar_conv, Rab_fb, Rinv, Rcon);
-
-[X3_FB, P3_FB] = get_ess3_sys_dist(kWhModule, kWhPack_conv, nBlockSer, nModSer_conv, ...
-    nModPar_conv, Rab_fb, Rcon);
-
-[X4_FB, P4_FB] = get_ess4_sys_dist(kWhModule, kWhPack_mod1, nBlockSer, nModSer_mod1, ...
-    nModPar_mod1, Rab_fb, Rcon, Rinv);
-
-[X5_FB, P5_FB] = get_ess5_sys_dist(kWhModule, kWhPack_mod1, nBlockSer, nModSer_mod1, ...
-    nModPar_mod1, Rab_fb, Rcon);
-
-X_FB = {X1_FB; X2_FB; X3_FB; X4_FB; X5_FB};
-P_FB = {P1_FB; P2_FB; P3_FB; P4_FB; P5_FB};
-
-[mus_FB, sigmas_FB] = get_dist_params(X_FB, P_FB);
-
-f3 = make_5_bar_chart(X_FB, P_FB, mus_FB, 3);
-
-%% Compare all cases (5 layouts, 3 balancing types) in a plot with mean and std dev of PMFs
-mus = [mus_PB, mus_HB, mus_FB];
-sigmas = [sigmas_PB, sigmas_HB, sigmas_FB]; 
-
-f4 = make_summary_plot(mus, sigmas);
+ make_summary_plot(mus_cc(:,:,j), sigmas_cc(:,:,j), 2, j);
+end
