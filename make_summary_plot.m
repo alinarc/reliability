@@ -15,7 +15,7 @@ end
 errorbar(x', mus, sigmas, 'k', 'linestyle', 'none')
 
 ylim([0 max(mus+sigmas,[],'all')+max(mus+sigmas,[],'all')/50]);
-ylabel('Expected Output (kWh)')
+ylabel('Expected available capacity (kWh)')
 
 switch type
     case 1
