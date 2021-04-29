@@ -1,4 +1,5 @@
 function [X, P] = combine_like_terms(Xn, Pn)
+% This function compines redundant states in distribution [Xn, Pn]
 
 X = unique(Xn);
 P = zeros(size(X));

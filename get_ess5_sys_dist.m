@@ -1,7 +1,7 @@
 function [X, P] = get_ess5_sys_dist(kWhModule, kWhPack, nBlockSer, ...
     nModSer, nModPar, Rbal, Rcon)
-% The purpose of this function is to return the distribution X,P for the DC
-% layout: DC pack, no inverter
+% The purpose of this function is to return the distribution X,P for ESS 
+% layout #5: modular pack, no inverter
 
 Pbal = [1-Rbal Rbal];
 Xbal = nModSer * [0 kWhModule];

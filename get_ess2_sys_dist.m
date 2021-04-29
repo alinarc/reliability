@@ -1,7 +1,7 @@
 function [X, P] = get_ess2_sys_dist(kWhModule, kWhPack, nBlockSer, ...
     nModSer, nModPar, Rbal, Rinv, Rcon)
 % The purpose of this function is to compute and return the distribution X,
-% P for AC layout #2: conventional pack, DC-DC converter, inverter. Note
+% P for Layout #2: conventional pack, DC-DC converter, inverter. Note
 % that the only difference between this layout and layout #1 is we have a
 % DC-DC converter here instead of a transformer
 

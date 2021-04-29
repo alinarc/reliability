@@ -1,4 +1,8 @@
 function f = make_5_bar_chart(X, P, mus, bal_type)
+% This function takes in cell arrays X and P, containing the values for 5
+% system distributions corresponding to the 5 layouts and plots them for a
+% given balancing type. bal_type = 1 --> passive balancing, 2 --> active
+% balancing with half bridges, 3 --> active balancing with full bridges
 
 X1 = X{1}; P1 = P{1};
 X2 = X{2}; P2 = P{2};

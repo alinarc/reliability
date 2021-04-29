@@ -17,6 +17,22 @@
 % All five system layouts are considered with passive balancing (PB) and active
 % balancing, both with converters based on half bridges (HB) and full
 % bridges (FB).
+%
+% As it's written now, this script produces 8 plots:
+%   1. Full PMFs for 5 layouts, passive balancing ('PBhistos.png')
+%   2. Full PMFs for 5 layouts, active balancing with half bridges ('HBhistos.png')
+%   3. Full PMFs for 5 layouts, active balancing with full bridges ('FBhistos.png')
+%   4. Summary bar chart for 5 layouts, all balancing types
+%       ('compare_all_bal.png')
+%   5. Summary bar chart for 5 layouts, 3 different cell chemistries
+%       (Passive balancing) ('compare_all_chem_PB.png')
+%   6. Summary bar chart for 5 layouts, 3 different cell chemistries
+%       (Active balancing - half bridges) ('compare_all_chem_HB.png')
+%   7. Summary bar chart for 5 layouts, 3 different cell chemistries
+%       (Active balancing - full bridges) ('compare_all_chem_FB.png')
+%   8. Summary bar chart for 5 layouts: Conventional pack (layout 1), and
+%       variations on modular pack (layout 4) considering different numbers of
+%       modules in series (all balancing types) ('compare_all_modules_series.png')
 % ----------------------------------------------------------------------
 
 close all
@@ -27,7 +43,7 @@ clear
 % that module Ah are limited to AhBal and cell voltage is vCell, develop
 % battery pack layouts using get_conventional_layout and get_modular_layout
 % for the two battery pack types.
-% Note: the module is The same for both battery pack types.
+% Note: the module is the same for both battery pack types.
 
 kWhModule_desired = 3.5;
 vModule_desired = 50;
@@ -39,14 +55,14 @@ AhBal = 100;
 [nBlockSer, kWhModule, nModSer_conv, nModPar_conv, kWhPack_conv] = get_conventional_layout(vCell, ...
     AhBal, kWhModule_desired, kWhPack_desired, vModule_desired, vPack_desired_AC);
 
-nModSer_mod1 = 1; % A variable that can be explored for the modular battery is the number of modules in series with each converter
+nModSer_mod1 = 1; % A variable that can be explored for the modular battery pack is the number of modules in series with each converter
 [nModPar_mod1, kWhPack_mod1] = get_modular_layout(kWhModule, nModSer_mod1, kWhPack_desired);
 
 % Read component failure rates from Excel file, save as struct
 L = readcell('failure_rates_computed.xlsx', 'Sheet', 'Value summary');
 L = cell2struct(L(:,2), L(:,1), 1);
 
-scale = 1e6;
+scale = 1e6; % Failure rates are computed as failures/10^6 hours, must scale to get failures/hr
 opHrs = 5*8000; % Based on 1C discharge, C/4 charge, 8000 cycles in lifetime
 D = 0.5; % overall system duty cycle
 calHrs = opHrs/D; 
@@ -66,7 +82,7 @@ lambdaDC_bal = nCapDC*L.lambdaC_bal + nDiodeDC*L.lambdaDiode_bal + nMosfetDC*L.l
 lambdaDC_half_bridge = nCapDC*L.lambdaC_bal + nDiodeDC/2*L.lambdaDiode_bal + nMosfetDC/2*L.lambdaMosfet_bal + ...
     nInductorDC*L.lambdaL_bal + nXfmrDC*L.lambdaXfmr_RF_bal;
 
-Rcon = exp(-lambdaDC/scale*calHrs); % reliability estimate for DC-DC onverter at time 'lifetime'
+Rcon = exp(-lambdaDC/scale*calHrs); % reliability estimate for DC-DC onverter at time 'calHrs'
 Rab_hb = exp(-lambdaDC_half_bridge/scale*calHrs);
 Rab_fb = exp(-lambdaDC_bal/scale*calHrs);
 
@@ -115,6 +131,7 @@ P_PB = {P1_PB; P2_PB; P3_PB; P4_PB; P5_PB};
 
 [mus_PB, sigmas_PB] = get_dist_params(X_PB, P_PB);
 
+% Plot #1 ('PBhistos.png')
 f1 = make_5_bar_chart(X_PB, P_PB, mus_PB, 1);
 
 %% Explore same 5 layouts with active balancing, half bridge circuits
@@ -138,6 +155,7 @@ P_HB = {P1_HB; P2_HB; P3_HB; P4_HB; P5_HB};
 
 [mus_HB, sigmas_HB] = get_dist_params(X_HB, P_HB);
 
+% Plot #2 ('HBhistos.png')
 f2 = make_5_bar_chart(X_HB, P_HB, mus_HB, 2);
 
 %% Explore same 5 layouts with active balancing, full bridge circuits
@@ -161,12 +179,14 @@ P_FB = {P1_FB; P2_FB; P3_FB; P4_FB; P5_FB};
 
 [mus_FB, sigmas_FB] = get_dist_params(X_FB, P_FB);
 
+% Plot #3 ('FBhistos.png')
 f3 = make_5_bar_chart(X_FB, P_FB, mus_FB, 3);
 
 %% Compare all cases (5 layouts, 3 balancing types) in a plot with mean and std dev of PMFs
 mus = [mus_PB, mus_HB, mus_FB];
 sigmas = [sigmas_PB, sigmas_HB, sigmas_FB]; 
 
+% Plot #4 ('compare_all_bal.png')
 f4 = make_summary_plot(mus, sigmas, 1,1);
 
 %% Explore impact of cell chemistry
@@ -202,6 +222,7 @@ for i = 1:3
     [mus_cc(:,i,j), sigmas_cc(:,i,j)] = get_dist_params(X_cc(:,i,j), P_cc(:,i,j));
 end
 
+% Plots #5-7 ('compare_all_chem_xB.png')
  make_summary_plot(mus_cc(:,:,j), sigmas_cc(:,:,j), 2, j);
 end
 
@@ -232,8 +253,8 @@ for n = 1:4
      [mus_ms(n, :), sigmas_ms(n,:)] = get_dist_params(X_ms(n,:), P_ms(n,:));
 end
 
-i = 15;
-n=5
+i = 10;
+n = 5;
 [nModPar_mod, kWhPack_mod] = get_modular_layout(kWhModule, i, kWhPack_desired);
      for b = 1:3
           Rbal = bal(b);
@@ -242,5 +263,6 @@ n=5
      end
 [mus_ms(n, :), sigmas_ms(n,:)] = get_dist_params(X_ms(n,:), P_ms(n,:));
 
+% Plot #8 ('compare_all_modules_series.png')
 make_summary_plot(mus_ms, sigmas_ms, 3, 1);
 

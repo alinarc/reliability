@@ -1,4 +1,7 @@
 function [X, P] = n_same_system_series(n, x1, p1)
+% This function takes in a probability distribution [x, p] for a PE unit
+% and returns the resultant distribution [X, P] for n of those PE units
+% connected in series.
 
 if n==1
     X = x1;
